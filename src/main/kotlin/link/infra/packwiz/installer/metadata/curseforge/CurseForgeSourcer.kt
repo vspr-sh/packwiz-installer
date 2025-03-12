@@ -42,9 +42,13 @@ private class GetModsResponse {
 }
 
 private const val APIServer = "api.curseforge.com"
-// If you fork/derive from packwiz, I request that you obtain your own API key.
-private val APIKey = "JDJhJDEwJHNBWVhqblU1N0EzSmpzcmJYM3JVdk92UWk2NHBLS3BnQ2VpbGc1TUM1UGNKL0RYTmlGWWxh".decodeBase64()!!
-	.string(StandardCharsets.UTF_8)
+private val APIKey = BuildConfig.API_KEY_BASE64
+    .decodeBase64()!!
+    .string(StandardCharsets.UTF_8)
+    .toByteArray(StandardCharsets.UTF_8)
+    .map { (it.toInt() xor 0x42).toByte() }
+    .toByteArray()
+    .toString(StandardCharsets.UTF_8)
 
 @Throws(JsonSyntaxException::class, JsonIOException::class)
 fun resolveCfMetadata(mods: List<IndexFile.File>, packFolder: PackwizFilePath, clientHolder: ClientHolder): List<ExceptionDetails> {

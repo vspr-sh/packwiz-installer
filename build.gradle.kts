@@ -7,6 +7,18 @@ plugins {
 	kotlin("jvm") version "1.7.10"
 	id("com.github.jk1.dependency-license-report") version "2.0"
 	`maven-publish`
+
+	id("com.github.gmazzo.buildconfig") version "2.1.0"
+}
+
+buildConfig {
+    packageName("link.infra.packwiz.installer.metadata.curseforge")
+
+    val curseforgeApiKey = project.findProperty("curseforgeApiKey") as? String
+        ?: System.getenv("CURSEFORGE_API_KEY")
+        ?: error("Missing API key")
+
+    buildConfigField("String", "API_KEY_BASE64", "\"${curseforgeApiKey}\"")
 }
 
 java {
