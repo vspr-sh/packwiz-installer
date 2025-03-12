@@ -17,34 +17,49 @@ import okio.ByteString.Companion.decodeBase64
 import java.nio.charset.StandardCharsets
 import kotlin.io.path.absolute
 
+import com.google.gson.annotations.SerializedName
+
 private class GetFilesRequest(val fileIds: List<Int>)
 private class GetModsRequest(val modIds: List<Int>)
 
 private class GetFilesResponse {
 	class CfFile {
+		@SerializedName("id")
 		var id = 0
+		@SerializedName("modId")
 		var modId = 0
+		@SerializedName("downloadUrl")
 		var downloadUrl: String? = null
 	}
+	@SerializedName("data")
 	val data = mutableListOf<CfFile>()
 }
 
 private class GetModsResponse {
 	class CfMod {
+		@SerializedName("id")
 		var id = 0
+		@SerializedName("name")
 		var name = ""
+		@SerializedName("links")
 		var links: CfLinks? = null
 	}
 	class CfLinks {
+		@SerializedName("websiteUrl")
 		var websiteUrl = ""
 	}
+	@SerializedName("data")
 	val data = mutableListOf<CfMod>()
 }
 
 private const val APIServer = "api.curseforge.com"
-// If you fork/derive from packwiz, I request that you obtain your own API key.
-private val APIKey = "JDJhJDEwJHNBWVhqblU1N0EzSmpzcmJYM3JVdk92UWk2NHBLS3BnQ2VpbGc1TUM1UGNKL0RYTmlGWWxh".decodeBase64()!!
-	.string(StandardCharsets.UTF_8)
+private val APIKey = BuildConfig.API_KEY_BASE64
+    .decodeBase64()!!
+    .string(StandardCharsets.UTF_8)
+    .toByteArray(StandardCharsets.UTF_8)
+    .map { (it.toInt() xor 0x42).toByte() }
+    .toByteArray()
+    .toString(StandardCharsets.UTF_8)
 
 @Throws(JsonSyntaxException::class, JsonIOException::class)
 fun resolveCfMetadata(mods: List<IndexFile.File>, packFolder: PackwizFilePath, clientHolder: ClientHolder): List<ExceptionDetails> {

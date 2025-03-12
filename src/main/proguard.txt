@@ -1,19 +1,28 @@
--dontoptimize
--dontobfuscate
+-dontshrink
 
-# Used by Okio and OkHttp
+# --- Keep entry points ---
+-keep public class link.infra.packwiz.installer.RequiresBootstrap {
+    public static void main(java.lang.String[]);
+}
+-keep class !link.infra.packwiz.installer.deps.**,!link.infra.packwiz.installer.metadata.curseforge.**,link.infra.packwiz.installer.** { *; }
+-keep class link.infra.packwiz.installer.metadata.curseforge.** {
+    @com.google.gson.annotations.SerializedName <fields>;
+    <init>(...);
+}
+
+# --- Keep Kotlin metadata ---
+-keep @interface kotlin.Metadata { *; }
+
+# --- Keep GSON TypeToken ---
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken
+
+# --- Library exceptions ---
 -dontwarn org.codehaus.mojo.animal_sniffer.*
 -dontwarn okhttp3.internal.platform.**
 -dontwarn org.conscrypt.**
 -dontwarn org.bouncycastle.**
 -dontwarn org.openjsse.**
 
--keep class !link.infra.packwiz.installer.deps.**,link.infra.packwiz.installer.** { *; }
-
--keep class com.google.gson.reflect.TypeToken { *; }
--keep class * extends com.google.gson.reflect.TypeToken
-
--keep @interface kotlin.Metadata { *; }
-
--renamesourcefileattribute SourceFile
--keepattributes *Annotation*,SourceFile,LineNumberTable,Signature
+# --- Preserve critical attributes ---
+-keepattributes Exceptions,InnerClasses,EnclosingMethod,Signature,*Annotation*

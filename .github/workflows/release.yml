@@ -5,6 +5,10 @@ on:
     tags:
       - 'v\d+.\d+.\d+'
 
+permissions:
+  packages: write
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,9 +22,13 @@ jobs:
         with:
           java-version: '8'
           distribution: 'temurin'
-          cache: gradle
+          # cache: gradle
       - name: Publish with Gradle
-        run: ./gradlew publish -Pgithub.token="${{ secrets.GITHUB_TOKEN }}" -Pbunnycdn.token="${{ secrets.BUNNYCDN_TOKEN }}" -Prelease=true
+        run: ./gradlew publish -Prelease=true --no-daemon
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
       - name: Cleanup Gradle Cache
         # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
         # Restoring these files from a GitHub Actions cache might cause problems for future builds.

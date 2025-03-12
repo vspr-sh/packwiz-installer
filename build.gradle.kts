@@ -1,3 +1,5 @@
+import java.util.Base64
+
 plugins {
 	java
 	application
@@ -7,6 +9,18 @@ plugins {
 	kotlin("jvm") version "1.7.10"
 	id("com.github.jk1.dependency-license-report") version "2.0"
 	`maven-publish`
+
+	id("com.github.gmazzo.buildconfig") version "2.1.0"
+}
+
+buildConfig {
+    packageName("link.infra.packwiz.installer.metadata.curseforge")
+
+    val curseforgeApiKey = System.getenv("CURSEFORGE_API_KEY")
+        ?: error("Missing API key")
+	val apiKeyBase64 = Base64.getEncoder().encodeToString(curseforgeApiKey.toByteArray())
+
+    buildConfigField("String", "API_KEY_BASE64", "\"${apiKeyBase64}\"")
 }
 
 java {
@@ -135,18 +149,18 @@ tasks.build {
 }
 
 githubRelease {
-	owner("comp500")
+	owner("vspr-sh")
 	repo("packwiz-installer")
 	tagName("${project.version}")
 	releaseName("Release ${project.version}")
 	draft(true)
-	token(findProperty("github.token") as String?)
+	token(System.getenv("GITHUB_TOKEN") as String?)
 	releaseAssets(layout.buildDirectory.dir("dist").map { it.file("packwiz-installer.jar") }.get())
 }
 
 tasks.githubRelease {
 	dependsOn(copyJar)
-	enabled = project.hasProperty("github.token") && project.findProperty("release") == "true"
+	enabled = System.getenv("GITHUB_TOKEN") != null && project.findProperty("release") == "true"
 }
 
 tasks.publish {
@@ -175,32 +189,28 @@ javaComponent.withVariantsFromConfiguration(configurations["shadowRuntimeElement
 	skip()
 }
 
-if (project.hasProperty("bunnycdn.token")) {
+if (System.getenv("GITHUB_TOKEN") != null) {
 	publishing {
-		publications {
-			create<MavenPublication>("maven") {
-				groupId = "link.infra.packwiz"
-				artifactId = "packwiz-installer"
-
-				from(components["java"])
-			}
-		}
 		repositories {
 			maven {
-				url = if (project.findProperty("release") == "true") {
-					uri("https://storage.bunnycdn.com/comp-maven/repository/release")
-				} else {
-					uri("https://storage.bunnycdn.com/comp-maven/repository/snapshot")
-				}
-				credentials(HttpHeaderCredentials::class) {
-					name = "AccessKey"
-					value = findProperty("bunnycdn.token") as String?
-				}
-				authentication {
-					create<HttpHeaderAuthentication>("header")
+				name = "GitHubPackages"
+				url = uri("https://maven.pkg.github.com/vspr-sh/packwiz-installer")
+
+				credentials {
+					username = System.getenv("GITHUB_ACTOR")
+					password = System.getenv("GITHUB_TOKEN")
 				}
 			}
 		}
+    	publications {
+            create<MavenPublication>("maven") {
+                groupId = "com.github.vspr-sh"
+                artifactId = "packwiz-installer"
+                version = project.version.toString()
+
+                from(components["java"])
+            }
+    	}
 	}
 }
 
