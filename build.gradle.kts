@@ -14,7 +14,7 @@ plugins {
 buildConfig {
     packageName("link.infra.packwiz.installer.metadata.curseforge")
 
-    val curseforgeApiKey = project.findProperty("curseforgeApiKey") as? String
+    val curseforgeApiKey = project.findProperty("curseforge.apiKey") as? String
         ?: System.getenv("CURSEFORGE_API_KEY")
         ?: error("Missing API key")
 
@@ -147,7 +147,7 @@ tasks.build {
 }
 
 githubRelease {
-	owner("comp500")
+	owner("vspr-sh")
 	repo("packwiz-installer")
 	tagName("${project.version}")
 	releaseName("Release ${project.version}")
