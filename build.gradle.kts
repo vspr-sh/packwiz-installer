@@ -190,24 +190,17 @@ javaComponent.withVariantsFromConfiguration(configurations["shadowRuntimeElement
 }
 
 if (System.getenv("GITHUB_TOKEN") != null) {
-	publishing {
-		publications {
-			create<MavenPublication>("maven") {
-				groupId = "com.github.vspr-sh.minecraft"
-				artifactId = "packwiz-installer"
-				version = project.version.toString()
-
-				from(components["java"])
-			}
+	repositories {
+		name = "GitHubPackages"
+		url = uri("https://maven.pkg.github.com/vspr-sh/packwiz-installer")
+		credentials {
+			username = System.getenv("GITHUB_ACTOR")
+			password = System.getenv("GITHUB_TOKEN")
 		}
-		repositories {
-			maven {
-				url = uri("https://maven.pkg.github.com/vspr-sh/packwiz-installer")
-				credentials {
-					username = System.getenv("GITHUB_ACTOR")
-					username = System.getenv("GITHUB_TOKEN")
-				}
-			}
+	}
+	publications {
+		register<MavenPublication>("gpr") {
+			from(components["java"])
 		}
 	}
 }
