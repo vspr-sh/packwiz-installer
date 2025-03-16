@@ -22,6 +22,7 @@ jobs:
       - name: Publish with Gradle
         run: ./gradlew publish
         env:
+          GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
       - name: Cleanup Gradle Cache
