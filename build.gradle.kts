@@ -191,11 +191,13 @@ javaComponent.withVariantsFromConfiguration(configurations["shadowRuntimeElement
 
 if (System.getenv("GITHUB_TOKEN") != null) {
 	repositories {
-		name = "GitHubPackages"
-		url = uri("https://maven.pkg.github.com/vspr-sh/packwiz-installer")
-		credentials {
-			username = System.getenv("GITHUB_ACTOR")
-			password = System.getenv("GITHUB_TOKEN")
+		maven {
+			name = "GitHubPackages"
+			url = uri("https://maven.pkg.github.com/vspr-sh/packwiz-installer")
+			credentials {
+				username = System.getenv("GITHUB_ACTOR")
+				password = System.getenv("GITHUB_TOKEN")
+			}
 		}
 	}
 	publications {
