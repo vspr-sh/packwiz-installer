@@ -5,6 +5,9 @@ on:
     tags:
       - 'v\d+.\d+.\d+'
 
+permissions:
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
