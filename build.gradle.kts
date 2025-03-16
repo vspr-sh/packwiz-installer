@@ -157,7 +157,7 @@ githubRelease {
 
 tasks.githubRelease {
 	dependsOn(copyJar)
-	enabled = System.getenv("GITHUB_TOKEN") && project.findProperty("release") == "true"
+	enabled = System.getenv("GITHUB_TOKEN") != null && project.findProperty("release") == "true"
 }
 
 tasks.publish {
