@@ -1,3 +1,5 @@
+import java.util.Base64
+
 plugins {
 	java
 	application
@@ -16,8 +18,9 @@ buildConfig {
 
     val curseforgeApiKey = System.getenv("CURSEFORGE_API_KEY")
         ?: error("Missing API key")
+	val apiKeyBase64 = Base64.getEncoder().encodeToString(curseforgeApiKey.toByteArray())
 
-    buildConfigField("String", "API_KEY_BASE64", "\"${curseforgeApiKey}\"")
+    buildConfigField("String", "API_KEY_BASE64", "\"${apiKeyBase64}\"")
 }
 
 java {
