@@ -14,8 +14,7 @@ plugins {
 buildConfig {
     packageName("link.infra.packwiz.installer.metadata.curseforge")
 
-    val curseforgeApiKey = project.findProperty("curseforge.apiKey") as? String
-        ?: System.getenv("CURSEFORGE_API_KEY")
+    val curseforgeApiKey = System.getenv("CURSEFORGE_API_KEY")
         ?: error("Missing API key")
 
     buildConfigField("String", "API_KEY_BASE64", "\"${curseforgeApiKey}\"")
@@ -152,13 +151,13 @@ githubRelease {
 	tagName("${project.version}")
 	releaseName("Release ${project.version}")
 	draft(true)
-	token(findProperty("github.token") as String?)
+	token(System.getenv("GITHUB_TOKEN") as String?)
 	releaseAssets(layout.buildDirectory.dir("dist").map { it.file("packwiz-installer.jar") }.get())
 }
 
 tasks.githubRelease {
 	dependsOn(copyJar)
-	enabled = project.hasProperty("github.token") && project.findProperty("release") == "true"
+	enabled = System.getenv("GITHUB_TOKEN") && project.findProperty("release") == "true"
 }
 
 tasks.publish {
@@ -187,29 +186,23 @@ javaComponent.withVariantsFromConfiguration(configurations["shadowRuntimeElement
 	skip()
 }
 
-if (project.hasProperty("bunnycdn.token")) {
+if (System.getenv("GITHUB_TOKEN") != null) {
 	publishing {
 		publications {
 			create<MavenPublication>("maven") {
-				groupId = "link.infra.packwiz"
+				groupId = "com.github.vspr-sh.minecraft"
 				artifactId = "packwiz-installer"
+				version = project.version.toString()
 
 				from(components["java"])
 			}
 		}
 		repositories {
 			maven {
-				url = if (project.findProperty("release") == "true") {
-					uri("https://storage.bunnycdn.com/comp-maven/repository/release")
-				} else {
-					uri("https://storage.bunnycdn.com/comp-maven/repository/snapshot")
-				}
-				credentials(HttpHeaderCredentials::class) {
-					name = "AccessKey"
-					value = findProperty("bunnycdn.token") as String?
-				}
-				authentication {
-					create<HttpHeaderAuthentication>("header")
+				url = uri("https://maven.pkg.github.com/vspr-sh/packwiz-installer")
+				credentials {
+					username = System.getenv("GITHUB_ACTOR")
+					username = System.getenv("GITHUB_TOKEN")
 				}
 			}
 		}
