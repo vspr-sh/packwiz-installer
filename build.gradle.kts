@@ -203,9 +203,13 @@ if (System.getenv("GITHUB_TOKEN") != null) {
 			}
 		}
     	publications {
-    	    register<MavenPublication>("gpr") {
-    	        from(components["java"])
-    	    }
+            create<MavenPublication>("maven") {
+                groupId = "com.github.vspr-sh"
+                artifactId = "packwiz-installer"
+                version = project.version.toString()
+
+                from(components["java"])
+            }
     	}
 	}
 }
