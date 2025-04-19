@@ -21,7 +21,7 @@ jobs:
         with:
           java-version: '8'
           distribution: 'temurin'
-          cache: gradle
+          # cache: gradle
       - name: Publish with Gradle
         run: ./gradlew publish
         env:
