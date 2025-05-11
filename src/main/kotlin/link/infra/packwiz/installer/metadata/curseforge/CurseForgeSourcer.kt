@@ -14,9 +14,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.internal.closeQuietly
 import okio.ByteString.Companion.decodeBase64
-import java.nio.charset.StandardCharsets
 import kotlin.io.path.absolute
-
 import com.google.gson.annotations.SerializedName
 
 private class GetFilesRequest(val fileIds: List<Int>)
@@ -73,7 +71,7 @@ fun resolveCfMetadata(mods: List<IndexFile.File>, packFolder: PackwizFilePath, c
 		.url("https://${APIServer}/v1/mods/files")
 		.header("Accept", "application/json")
 		.header("User-Agent", "packwiz-installer")
-		.header("X-API-Key", BuildConfig.API_KEY_BASE64.decodeBase64()!!.toString(StandardCharsets.UTF_8))
+		.header("X-API-Key", BuildConfig.API_KEY_BASE64.decodeBase64()!!.toString())
 		.post(Gson().toJson(reqData, GetFilesRequest::class.java).toRequestBody("application/json".toMediaType()))
 		.build()
 	val res = clientHolder.okHttpClient.newCall(req).execute()
@@ -127,7 +125,7 @@ fun resolveCfMetadata(mods: List<IndexFile.File>, packFolder: PackwizFilePath, c
 			.url("https://${APIServer}/v1/mods")
 			.header("Accept", "application/json")
 			.header("User-Agent", "packwiz-installer")
-			.header("X-API-Key", BuildConfig.API_KEY_BASE64.decodeBase64()!!.toString(StandardCharsets.UTF_8))
+			.header("X-API-Key", BuildConfig.API_KEY_BASE64.decodeBase64()!!.toString())
 			.post(Gson().toJson(reqModsData, GetModsRequest::class.java).toRequestBody("application/json".toMediaType()))
 			.build()
 		val resMods = clientHolder.okHttpClient.newCall(reqMods).execute()
