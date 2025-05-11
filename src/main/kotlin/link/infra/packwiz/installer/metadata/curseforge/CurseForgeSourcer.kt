@@ -53,13 +53,6 @@ private class GetModsResponse {
 }
 
 private const val APIServer = "api.curseforge.com"
-private val APIKey = BuildConfig.API_KEY_BASE64
-    .decodeBase64()!!
-    .string(StandardCharsets.UTF_8)
-    .toByteArray(StandardCharsets.UTF_8)
-    .map { (it.toInt() xor 0x42).toByte() }
-    .toByteArray()
-    .toString(StandardCharsets.UTF_8)
 
 @Throws(JsonSyntaxException::class, JsonIOException::class)
 fun resolveCfMetadata(mods: List<IndexFile.File>, packFolder: PackwizFilePath, clientHolder: ClientHolder): List<ExceptionDetails> {
@@ -80,7 +73,7 @@ fun resolveCfMetadata(mods: List<IndexFile.File>, packFolder: PackwizFilePath, c
 		.url("https://${APIServer}/v1/mods/files")
 		.header("Accept", "application/json")
 		.header("User-Agent", "packwiz-installer")
-		.header("X-API-Key", APIKey)
+		.header("X-API-Key", BuildConfig.API_KEY_BASE64.decodeBase64()!!.toString(StandardCharsets.UTF_8))
 		.post(Gson().toJson(reqData, GetFilesRequest::class.java).toRequestBody("application/json".toMediaType()))
 		.build()
 	val res = clientHolder.okHttpClient.newCall(req).execute()
@@ -134,7 +127,7 @@ fun resolveCfMetadata(mods: List<IndexFile.File>, packFolder: PackwizFilePath, c
 			.url("https://${APIServer}/v1/mods")
 			.header("Accept", "application/json")
 			.header("User-Agent", "packwiz-installer")
-			.header("X-API-Key", APIKey)
+			.header("X-API-Key", BuildConfig.API_KEY_BASE64.decodeBase64()!!.toString(StandardCharsets.UTF_8))
 			.post(Gson().toJson(reqModsData, GetModsRequest::class.java).toRequestBody("application/json".toMediaType()))
 			.build()
 		val resMods = clientHolder.okHttpClient.newCall(reqMods).execute()
